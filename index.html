@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil Jurusan - SMK Informatika Kota Serang</title>
+  
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase JS Client Library CDN (Wajib ada sebelum script.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Link ke File CSS Eksternal -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Container Notifikasi Toast (Kustom) -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ================= SECTION 1: LOGIN PAGE ================= -->
+  <div id="loginScreen" class="login-container">
+    <div class="login-card">
+      <div class="login-logo">SMK<span> INFORMATIKA</span></div>
+      <div class="login-subtitle">"Sekolahnya Orang Komputer"</div>
+      
+      <!-- Input Admin -->
+      <div class="form-group">
+        <label for="adminUsername">Username Admin</label>
+        <input type="text" id="adminUsername" class="form-control" placeholder="............">
+      </div>
+      <div class="form-group">
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" class="form-control" placeholder="............">
+      </div>
+      
+      <button class="btn-login-admin" onclick="handleLogin('admin')">
+        <i class="fa-solid fa-user-shield"></i> Masuk Sebagai Admin
+      </button>
+
+      <div class="divider"><span>ATAU</span></div>
+
+      <!-- Akses Publik -->
+      <button class="btn-login-umum" onclick="handleLogin('umum')">
+        <i class="fa-solid fa-users"></i> Masuk Sebagai Umum / Tamu
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ================= SECTION 2: APP CONTAINER (DASHBOARD) ================= -->
+  <div id="appScreen" class="app-container">
+    
+    <!-- Top Header -->
+    <header>
+      <div class="school-info">
+        <h1>SMK INFORMATIKA KOTA SERANG</h1>
+        <p><i class="fa-solid fa-graduation-cap"></i> Profil Jurusan Unggulan</p>
+      </div>
+      <div class="nav-actions">
+        <span id="roleDisplay" class="role-badge">Umum</span>
+        <button class="btn-logout" onclick="handleLogout()">Keluar</button>
+      </div>
+    </header>
+
+    <!-- Sub-Nav / Switcher Jurusan -->
+    <div class="submenu-bar">
+      <button id="tabPplg" class="tab-btn" onclick="switchMajor('pplg')">
+        <i class="fa-solid fa-code"></i> PPLG
+      </button>
+      <button id="tabMplb" class="tab-btn" onclick="switchMajor('mplb')">
+        <i class="fa-solid fa-briefcase"></i> MPLB
+      </button>
+      <button id="tabDkv" class="tab-btn" onclick="switchMajor('dkv')">
+        <i class="fa-solid fa-palette"></i> DKV
+      </button>
+      <!-- Menu Eksklusif Admin -->
+      <button id="tabAdminDb" class="tab-btn admin-only" onclick="switchTab('admin-db')">
+        <i class="fa-solid fa-database"></i> Database Pendaftar
+      </button>
+    </div>
+
+    <!-- MAIN WINDOW CONTENT -->
+    <main class="content-section">
+
+      <!-- ================= HALAMAN PROFIL JURUSAN ================= -->
+      <div id="profileView" class="view-panel">
+        
+        <!-- Dinamis Hero Header -->
+        <div class="profile-hero">
+          <h2 id="majorName">Manajemen Perkantoran dan Layanan Bisnis (MPLB)</h2>
+          <p id="majorDesc">Membekali siswa dengan keterampilan manajemen administrasi, organisasi, komunikasi perkantoran, dan pelayanan bisnis modern secara optimal.</p>
+        </div>
+
+        <div class="grid-2">
+          <!-- Card Apa yang Dipelajari -->
+          <div class="card">
+            <h3><i class="fa-solid fa-book-open"></i> Yang Dipelajari</h3>
+            
+            <div class="mapel-container">
+              <div class="mapel-title">Mata Pelajaran Kejuruan</div>
+              <ul id="listKejuruan" class="mapel-list">
+                <!-- Diisi via JS -->
+              </ul>
+            </div>
+
+            <div class="mapel-container">
+              <div class="mapel-title">Mata Pelajaran Umum</div>
+              <ul id="listUmum" class="mapel-list">
+                <!-- Diisi via JS -->
+              </ul>
+            </div>
+
+            <div class="mapel-container">
+              <div class="mapel-title">Muatan Lokal (Mulok)</div>
+              <ul id="listMulok" class="mapel-list">
+                <!-- Diisi via JS -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Card Peluang Kerja -->
+          <div class="card">
+            <h3><i class="fa-solid fa-briefcase"></i> Peluang Kerja / Karir</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+              Lulusan program ini dirancang siap kerja dan terserap di berbagai industri terkemuka:
+            </p>
+            <div id="jobGrid" class="job-grid">
+              <!-- Diisi via JS -->
+            </div>
+
+            <!-- Slogan Card -->
+            <div style="margin-top:25px; background: var(--bg-light); border-radius: 8px; padding: 15px; text-align: center; border-top: 3px solid var(--secondary);">
+              <span id="majorSlogan" style="font-style: italic; font-weight: 600; color: var(--primary); font-size:0.9rem;">
+                "MPLB, Pilihan Cerdas Untuk Karier Sukses!"
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Pendaftaran Inline (di bawah profil jurusan) -->
+        <div class="card inline-register-box">
+          <h3><i class="fa-solid fa-file-signature"></i> Minat & Pendaftaran <span id="inlineMajorLabel">MPLB</span></h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+            Tertarik bergabung di jurusan ini? Isi formulir di bawah — admin kami akan segera menghubungi Anda.
+          </p>
+          <form id="inlineInterestForm" onsubmit="submitInlineForm(event)">
+            <div class="inline-form-grid">
+              <div class="form-group">
+                <label for="inlineNama">Nama Lengkap</label>
+                <input type="text" id="inlineNama" class="form-control" required placeholder="Contoh: Budi Santoso">
+              </div>
+              <div class="form-group">
+                <label for="inlineKontak">Email / WhatsApp</label>
+                <input type="text" id="inlineKontak" class="form-control" required placeholder="Contoh: budi@gmail.com / 0812xxxx">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inlinePesan">Pesan / Pertanyaan (opsional)</label>
+              <textarea id="inlinePesan" class="form-control" rows="3" placeholder="Tulis pertanyaan atau alasan Anda memilih jurusan ini..."></textarea>
+            </div>
+            <input type="hidden" id="inlineJurusan" value="MPLB">
+            <button type="submit" id="btnSubmitInline" class="btn-submit">
+              <i class="fa-solid fa-paper-plane"></i> <span id="textSubmitInline">Kirim Pendaftaran</span>
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- ================= HALAMAN REGISTRASI / HUBUNGI KAMI (UMUM) ================= -->
+      <div id="registerView" class="view-panel" style="display: none;">
+        <div class="card register-form-box">
+          <h3><i class="fa-solid fa-file-contract"></i> Hubungi Kami / Minat Pendaftaran</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+            Tertarik dengan salah satu jurusan kami? Isi formulir di bawah ini. Admin kami akan segera menghubungi Anda.
+          </p>
+          
+          <form id="interestForm" onsubmit="submitForm(event)">
+            <div class="form-group">
+              <label for="regNama">Nama Lengkap</label>
+              <input type="text" id="regNama" class="form-control" required placeholder="Contoh: Budi Santoso">
+            </div>
+            
+            <div class="form-group">
+              <label for="regEmail">Email / Whatsapp</label>
+              <input type="text" id="regEmail" class="form-control" required placeholder="Contoh: budi@gmail.com / 0812xxxx">
+            </div>
+
+            <div class="form-group">
+              <label for="regJurusan">Pilihan Jurusan</label>
+              <select id="regJurusan" class="form-control" required>
+                <option value="PPLG">Pengembangan Perangkat Lunak dan GIM (PPLG)</option>
+                <option value="MPLB">Manajemen Perkantoran dan Layanan Bisnis (MPLB)</option>
+                <option value="DKV">Desain Komunikasi Visual (DKV)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="regPesan">Pesan / Catatan Tambahan</label>
+              <textarea id="regPesan" class="form-control" rows="4" placeholder="Tulis alasan memilih jurusan atau pertanyaan Anda..."></textarea>
+            </div>
+
+            <button type="submit" id="btnSubmitReg" class="btn-submit">Kirim Pendaftaran</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================= HALAMAN DATABASE ADMIN (ADMIN ONLY) ================= -->
+      <div id="adminDbView" class="view-panel" style="display: none;">
+        
+        <!-- Statistik Kecil -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <h4>Total Pendaftar</h4>
+            <p id="statTotal">0</p>
+          </div>
+          <div class="stat-card" style="border-top-color: var(--pplg-primary)">
+            <h4>Peminat PPLG</h4>
+            <p id="statPplg">0</p>
+          </div>
+          <div class="stat-card" style="border-top-color: var(--mplb-primary)">
+            <h4>Peminat MPLB</h4>
+            <p id="statMplb">0</p>
+          </div>
+          <div class="stat-card" style="border-top-color: var(--dkv-primary)">
+            <h4>Peminat DKV</h4>
+            <p id="statDkv">0</p>
+          </div>
+        </div>
+
+        <!-- Kolom Kontrol Penyaringan, Pencarian & Ekspor -->
+        <div class="db-controls-card">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="dbSearchInput" placeholder="Cari nama atau kontak pendaftar..." oninput="handleFilterChange()">
+          </div>
+          <div class="filter-box">
+            <label for="dbFilterJurusan"><i class="fa-solid fa-filter"></i> Filter:</label>
+            <select id="dbFilterJurusan" class="form-control-select" onchange="handleFilterChange()">
+              <option value="all">Semua Jurusan</option>
+              <option value="PPLG">PPLG</option>
+              <option value="MPLB">MPLB</option>
+              <option value="DKV">DKV</option>
+            </select>
+          </div>
+          <button class="btn-export" onclick="exportDataToCSV()">
+            <i class="fa-solid fa-file-excel"></i> Ekspor CSV
+          </button>
+        </div>
+
+        <!-- Tabel Database -->
+        <div class="db-table-container">
+          <div class="table-header-row">
+            <h3><i class="fa-solid fa-database"></i> Database Peminat Jurusan</h3>
+            <span class="db-sync-info"><i class="fa-solid fa-cloud"></i> Sinkronisasi Cloud Aktif</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 60px;">No</th>
+                <th>Nama Lengkap</th>
+                <th>Kontak</th>
+                <th>Jurusan</th>
+                <th>Catatan / Pesan</th>
+                <th style="width: 100px;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="dbTableBody">
+              <!-- Diisi via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 SMK INFORMATIKA KOTA SERANG. All Rights Reserved.</p>
+      <p style="font-size: 0.7rem; opacity: 0.6; margin-top: 5px;">Materi disesuaikan dengan kurikulum resmi Sekolah Menengah Kejuruan.</p>
+    </footer>
+
+  </div>
+
+  <!-- Link ke File JavaScript Eksternal -->
+  <script src="script.js"></script>
+</body>
+</html>
